@@ -21,7 +21,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 async function run() {
     try {
         await client.connect();
-        console.log('Databse Connected')
+        console.log('Database Connected')
         const tasksCollection = client.db('todo').collection('task');
         // const task= {task:'python django'};
         // const result= await tasksCollection.insertOne(task);
@@ -34,12 +34,50 @@ async function run() {
             const newtask = req.body;
             console.log('new task added', newtask);
             const result = await tasksCollection.insertOne(newtask);
-            // res.send({result : 'success'})
+            // res.send(result)
             res.send(result)
-            console.log(result)
         });
 
-    
+        //---------Get all tasks----------
+        app.get('/task', async (req, res) => {
+            const query = {};
+            const cursor = tasksCollection.find(query)
+            const tasks = await cursor.toArray();
+            res.send(tasks);
+        })
+
+        //--- Get Individual task Details-------------
+        app.get('/task/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await tasksCollection.findOne(query);
+            res.send(result)
+        })
+
+        //-----Update Individual task-----------
+        app.put('/task/:id', async (req, res) => {
+            const id = req.params.id;
+            const updatetask = req.body;
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: {
+                    quantity: updatetask.quantity
+                }
+            };
+            const result = await tasksCollection.updateOne(filter, updateDoc, options);
+            res.send(result)
+            console.log(result)
+        })
+
+        //--------Delete Individual task---------------
+        app.delete('/task/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await tasksCollection.deleteOne(query);
+            res.send(result);
+            console.log(id, result)
+        })
     }
     finally {
         // await client.close();
