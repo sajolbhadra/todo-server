@@ -27,7 +27,7 @@ async function run() {
         // const task= {task:'python django'};
         // const result= await tasksCollection.insertOne(task);
         // console.log(`task added with id: ${result.insertedId}`)
-       
+
 
         //-------------------------------------tasks----------------------------------
         //---------Insert an task------------
@@ -38,25 +38,11 @@ async function run() {
             // res.send(result)
             res.send(result)
         });
-        app.post('/completed-task', async (req, res) => {
-            const newtask = req.body;
-            console.log('new task added', newtask);
-            const result = await completedTasksCollection.insertOne(newtask);
-            // res.send(result)
-            res.send(result)
-        });
 
         //---------Get all tasks----------
         app.get('/task', async (req, res) => {
             const query = {};
             const cursor = tasksCollection.find(query)
-            const tasks = await cursor.toArray();
-            res.send(tasks);
-        })
-        //Get COmpleted Task
-        app.get('/completed-task', async (req, res) => {
-            const query = {};
-            const cursor = completedTasksCollection.find(query)
             const tasks = await cursor.toArray();
             res.send(tasks);
         })
@@ -93,6 +79,27 @@ async function run() {
             res.send(result);
             console.log(id, result)
         })
+
+
+
+
+
+        //Get COmpleted Task
+        app.get('/completed-task', async (req, res) => {
+            const query = {};
+            const cursor = completedTasksCollection.find(query)
+            const tasks = await cursor.toArray();
+            res.send(tasks);
+        })
+        //------Insert to Completed Task-----------
+        app.post('/completed-task', async (req, res) => {
+            const query = { _id: ObjectId(req.params) };
+            console.log('new task added', query);
+            const result = await completedTasksCollection.insertOne(query);
+            // res.send(result)
+            res.send(result)
+        });
+
     }
     finally {
         // await client.close();
