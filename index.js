@@ -23,6 +23,7 @@ async function run() {
         await client.connect();
         console.log('Database Connected')
         const tasksCollection = client.db('todo').collection('task');
+        const completedTasksCollection = client.db('todo').collection('completedTask');
         // const task= {task:'python django'};
         // const result= await tasksCollection.insertOne(task);
         // console.log(`task added with id: ${result.insertedId}`)
@@ -37,11 +38,25 @@ async function run() {
             // res.send(result)
             res.send(result)
         });
+        app.post('/completed-task', async (req, res) => {
+            const newtask = req.body;
+            console.log('new task added', newtask);
+            const result = await completedTasksCollection.insertOne(newtask);
+            // res.send(result)
+            res.send(result)
+        });
 
         //---------Get all tasks----------
         app.get('/task', async (req, res) => {
             const query = {};
             const cursor = tasksCollection.find(query)
+            const tasks = await cursor.toArray();
+            res.send(tasks);
+        })
+        //Get COmpleted Task
+        app.get('/completed-task', async (req, res) => {
+            const query = {};
+            const cursor = completedTasksCollection.find(query)
             const tasks = await cursor.toArray();
             res.send(tasks);
         })
