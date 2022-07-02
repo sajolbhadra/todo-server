@@ -35,7 +35,6 @@ async function run() {
             const newtask = req.body;
             console.log('new task added', newtask);
             const result = await tasksCollection.insertOne(newtask);
-            // res.send(result)
             res.send(result)
         });
 
@@ -55,20 +54,19 @@ async function run() {
             res.send(result)
         })
 
-        //-----Update Individual task-----------
-        app.put('/task/:id', async (req, res) => {
+        // Update Task 
+        app.put('/task/:id', async(req, res) => {
             const id = req.params.id;
-            const updatetask = req.body;
-            const filter = { _id: ObjectId(id) };
-            const options = { upsert: true };
-            const updateDoc = {
+            const taskObject= req.body;
+            const filter = {_id: ObjectId(id)};
+            const options = {upsert: true};
+            const updatedDoc ={
                 $set: {
-                    quantity: updatetask.quantity
+                    task:taskObject.task,
                 }
             };
-            const result = await tasksCollection.updateOne(filter, updateDoc, options);
-            res.send(result)
-            console.log(result)
+            const result = await tasksCollection.updateOne(filter, updatedDoc, options);
+            res.send(result);
         })
 
         //--------Delete Individual task---------------
@@ -93,10 +91,9 @@ async function run() {
         })
         //------Insert to Completed Task-----------
         app.post('/completed-task', async (req, res) => {
-            const query = { _id: ObjectId(req.params) };
-            console.log('new task added', query);
-            const result = await completedTasksCollection.insertOne(query);
-            // res.send(result)
+            const completedTask = req.body;
+            console.log('new task added', completedTask);
+            const result = await completedTasksCollection.insertOne(completedTask);
             res.send(result)
         });
 
