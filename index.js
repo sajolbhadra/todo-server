@@ -10,7 +10,13 @@ const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 
 //middleware
-app.use(cors())
+app.use(
+    cors({
+      origin: true,
+      optionsSuccessStatus: 200,
+      credentials: true,
+    })
+  );
 app.use(express.json())
 
 
